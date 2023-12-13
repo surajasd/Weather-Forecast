@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-...your-integrity-hash... " crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #76a1e3;
+            background-image: linear-gradient(to bottom, #89b4ff, #6096ce);
+            margin: 0;
+            padding: 20px;
+            height: 95vh;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 8%;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button-container button{
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+        .button-container button:hover{
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+        }
+
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body style="background-image: url('{% static "cloud.jpg" %}'); background-size:cover; background-repeat:no-repeat; " >
+    <div class="container">
+        <h2><i class="fas fa-user-plus"></i> Register </h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="username"><i class="fas fa-user"></i> Username:</label>
+            <input type="text" id="username" name="username">
+            <label for="password1">
+                <i class="fas fa-lock"></i> Password:</label>
+                <input type="password" id="password1" name="password1">
+                <label for="password2"><i class="fas fa-lock"></i> Confirm Password:</label>
+                <input type="password" id="password2" name="password2">
+                <div class="button-container">
+                    <button type="submit"><i class="fas fa-check"></i> Register </button>
+                </div>
+                {% if form.errors %}
+                <div class="error-message">
+                    <ul>
+                        {% for field in form %}
+                        {% for error in field.errors %}
+                        <li>{{ field.label }} - {{ error }}</li>
+                        {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </form>
+            <div class="login-link">
+                Already have an account? <a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    

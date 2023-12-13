@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <script src="{% static 'main.js' %}" type="text/javascript"></script>  
+   
+</head>
+<style>
+    form input {
+        all: unset;
+        width: calc(100% - 80px);
+        height: 40px;
+        padding: 0 20px;
+        background-color: rgba(219, 226, 239, 0.5);
+        border-radius: 10px;
+        max-width: 550px;
+        margin: 0 auto;
+    }
+
+       ul#favorites-list {
+        list-style-type: none;
+        padding: 0;
+      }
+     
+
+    input::placeholder {
+        color: #fff;
+    }
+
+    #add-favorite-button{
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    }
+
+    #add-favorite-button:hover{
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    }
+
+    #favorites-container{
+        background-color: rgb(52, 111, 161);
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        width: 250px;
+        margin: auto;
+        margin-top: 10px;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    #favorites-list li{
+        margin-top: 20px;;
+    }
+    .remove-button{
+        background-color: red;
+        margin-left: 10px;
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    }
+    .remove-button:hover{
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    }
+
+
+</style>
+<body style="background-image: url('{% static "back.jpg" %}'); background-size: cover; background-repeat:no-repeat; overflow-x:hidden; height:100%;">
+    <div style="display:flex; justify-content: flex-end; gap:2rem;">
+        <button onclick="window.location.href='/login'" style="height: 2rem;">
+            Login
+        </button>
+        <button onclick="window.location.href='/register'">
+            Register
+        </button>
+    </div>
+<div id="head">
+    <h1>WEATHER APP</h1>
+</div>
+
+<!-- <form id="add-favorite-form" method="post" action="{% url 'add_to_favorites' %}">
+    {% csrf_token %}
+    <input id="favorite-city" type="hidden" name="city" value="{{ weather_data1.city }}">
+    <button id="add-favorite-button" type="submit">Add to Favorites</button>
+</form>
+
+<button id="favorites-button">Favorites</button>
+
+<div id="favorites-container" style="display: none;">
+  <div class="favorites">
+      <h3>Favorites</h3>
+      <ul id="favorites-list">
+          <!-- Favorites will be dynamically added here -->
+      <!-- </ul>
+  </div>
+</div> --> 
+
+<form method="post">
+    {% csrf_token %}
+    <div class="autocomplete" style="width:100%; margin-bottom:10px;">
+        <input id="city1" type="text" name="city1" placeholder="Enter City ..." required>
+      </div>
+    <button type="submit">Search Weather</button>
+</form>
+
+<div class="comparison-container">
+    {% if weather_data1 %}
+        <div class="city-container">
+            {% include 'weather_app/city_weather.html' with weather_data=weather_data1 daily_forecasts=daily_forecasts1 %}
+        </div>
+    {% endif %}
+    {% if weather_data2 %}
+        <div class="city-container">
+            {% include 'weather_app/city_weather.html' with weather_data=weather_data2 daily_forecasts=daily_forecasts2 %}
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // JavaScript code to handle storing and displaying favorites
+
+    // Function to check if a city already exists in favorites
+    function isCityInFavorites(city) {
+        let favorites = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [];
+        return favorites.includes(city);
+    }
+
+    // Function to store a unique city in local storage
+    function addToFavorites(city) {
+        if (!isCityInFavorites(city)) {
+            let favorites = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [];
+            favorites.push(city);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+    }
+
+    // Function to remove a city from favorites in local storage
+    function removeFromFavorites(city) {
+        let favorites = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [];
+        let index = favorites.indexOf(city);
+        if (index > -1) {
+            favorites.splice(index, 1);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+    }
+
+// Function to dynamically create a remove button for a city in the favorites list
+function createRemoveButton(city) {
+  let button = document.createElement('button');
+  button.innerText = 'Remove';
+  button.classList.add('remove-button');
+  button.addEventListener('click', function () {
+      removeFromFavorites(city);
+      displayFavorites();
+  });
+  return button;
+}
+
+// Function to retrieve favorites from local storage and display them in the favorites div
+function displayFavorites() {
+  let favorites = localStorage.getItem('favorites') ? JSON.parse(localStorage.getItem('favorites')) : [];
+  let favoritesList = document.getElementById('favorites-list');
+
+  favoritesList.innerHTML = '';
+
+  if (favorites.length === 0) {
+      favoritesList.innerHTML = '<li>No favorites added yet.</li>';
+  } else {
+      favorites.forEach(function (city) {
+          let listItem = document.createElement('li');
+          listItem.textContent = city;
+          let removeButton = createRemoveButton(city);
+          listItem.appendChild(removeButton);
+          favoritesList.appendChild(listItem);
+      });
+  }
+}
+
+autocomplete(document.getElementById("city1"), countries);
+// Event listener for the "Add to Favorites" button
+document.getElementById('add-favorite-form').addEventListener('submit', function (event) {
+  event.preventDefault();
+  let favoriteCityInput = document.getElementById('favorite-city');
+  let city = favoriteCityInput.value;
+  addToFavorites(city);
+  displayFavorites();
+  favoriteCityInput.value = ''; // Clear the input field
+});
+
+    // Function to toggle the visibility of the favorites container
+    function toggleFavoritesContainer() {
+      var favoritesContainer = document.getElementById('favorites-container');
+      if (favoritesContainer.style.display === 'none') {
+          favoritesContainer.style.display = 'block';
+      } else {
+          favoritesContainer.style.display = 'none';
+      }
+  }
+
+  // Event listener for the "Favorites" button
+  document.getElementById('favorites-button').addEventListener('click', function () {
+      toggleFavoritesContainer();
+  });
+
+// Display favorites on page load
+displayFavorites();
+
+
+</script>
+
+</body>
+</html>
